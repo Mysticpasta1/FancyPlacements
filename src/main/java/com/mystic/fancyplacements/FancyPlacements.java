@@ -3,9 +3,7 @@ package com.mystic.fancyplacements;
 import com.mystic.fancyplacements.init.Registry;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.BedBlock;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.TallFlowerBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
@@ -29,7 +27,8 @@ public class FancyPlacements {
         LevelAccessor level = event.getLevel();
         if (!((Level) level).isClientSide && !block.is(Registry.DUMMY_BLOCK.get())) {
             //TODO modded blocks!
-            if(block.getBlock() instanceof TallFlowerBlock || block.getBlock() instanceof BedBlock || block.getBlock() instanceof DoorBlock) {
+            if(block.getBlock() instanceof TallFlowerBlock || block.getBlock() instanceof BedBlock || block.getBlock() instanceof DoorBlock
+            || block.getBlock() instanceof TallGrassBlock || block.getBlock() instanceof TallSeagrassBlock) {
                 return;
             }
             ServerLifecycleHooks.getCurrentServer().submit(() -> {
