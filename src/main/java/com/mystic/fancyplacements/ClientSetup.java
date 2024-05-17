@@ -16,7 +16,7 @@ public class ClientSetup {
         registerDummyTile(Registry.DUMMY_TILE.get());
     }
 
-    private static void registerDummyTile(BlockEntityType<DummyTileEntity> registryObject) {
+    private static void registerDummyTile(BlockEntityType<DummyBlockEntity> registryObject) {
         BlockEntityRenderers.register(registryObject, DummyTileRenderer::new);
     }
 }

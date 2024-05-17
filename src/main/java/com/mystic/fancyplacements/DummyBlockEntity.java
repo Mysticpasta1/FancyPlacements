@@ -2,8 +2,8 @@ package com.mystic.fancyplacements;
 
 import com.mystic.fancyplacements.init.Registry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -13,28 +13,31 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
-public class DummyTileEntity extends BlockEntity {
+public class DummyBlockEntity extends BlockEntity {
 
     public int age = 10;
-    public BlockState blockState1;
+    public BlockState target;
 
-    public DummyTileEntity(BlockPos p_155229_, BlockState p_155230_) {
+    public DummyBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
         this(p_155229_, p_155230_, Blocks.DIORITE.defaultBlockState());
     }
 
-    public DummyTileEntity(BlockPos p_155229_, BlockState p_155230_, BlockState blockState2) {
+    public DummyBlockEntity(BlockPos p_155229_, BlockState p_155230_, BlockState target) {
         super(Registry.DUMMY_TILE.get(), p_155229_, p_155230_);
-        blockState1 = blockState2;
+        this.target = target;
     }
 
-    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, DummyTileEntity tile) {
+    public static void tick(Level pLevel, BlockPos pPos, BlockState pState, DummyBlockEntity entity) {
         if(!pLevel.isClientSide) {
-            tile.age += 1;
-            if (tile.age >= 60) {
-                pLevel.setBlock(pPos, tile.blockState1, 3);
+            System.out.println("Age Before: " + entity.age);
+            ++entity.age;
+            System.out.println("Age After: " + entity.age);
+            if (entity.age >= 60) {
+                pLevel.setBlock(pPos, entity.target, 3);
             }
-            tile.sync();
+            entity.sync();
         }
     }
 
@@ -42,20 +45,19 @@ public class DummyTileEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag pTag) {
         super.saveAdditional(pTag);
         pTag.putInt("age", age);
+        pTag.put("target", NbtOps.INSTANCE.withEncoder(BlockState.CODEC).andThen(a -> a.result()).andThen(Optional::orElseThrow).apply(target));
     }
 
     @Override
     public void load(CompoundTag pTag) {
         super.load(pTag);
         this.age = pTag.getInt("age");
+        this.target = NbtOps.INSTANCE.withDecoder(BlockState.CODEC).andThen(a -> a.result()).andThen(Optional::orElseThrow).apply(pTag.getCompound("target")).getFirst();
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-        var compound = new CompoundTag();
-        compound.putInt("age", age);
-        saveWithFullMetadata();
-        return compound;
+        return saveWithFullMetadata();
     }
 
     public void sync() {

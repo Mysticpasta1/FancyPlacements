@@ -10,6 +10,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 @Mod("fancyplacements")
 public class FancyPlacements {
@@ -24,10 +25,12 @@ public class FancyPlacements {
         BlockState block = event.getPlacedBlock();
         LevelAccessor level = event.getLevel();
         if (!((Level) level).isClientSide && !block.is(Registry.DUMMY_BLOCK.get())) {
-            level.setBlock(event.getPos(), Registry.DUMMY_BLOCK.get().defaultBlockState(), 11);
-            if (level.getBlockEntity(event.getPos()) instanceof DummyTileEntity dummy) {
-                dummy.blockState1 = block;
-            }
+            ServerLifecycleHooks.getCurrentServer().submit(() -> {
+                level.setBlock(event.getPos(), Registry.DUMMY_BLOCK.get().defaultBlockState(), 11);
+                if (level.getBlockEntity(event.getPos()) instanceof DummyBlockEntity dummy) {
+                    dummy.target = block;
+                }
+            });
         }
     }
 }
