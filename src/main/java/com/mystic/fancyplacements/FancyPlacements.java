@@ -3,8 +3,12 @@ package com.mystic.fancyplacements;
 import com.mystic.fancyplacements.init.Registry;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -21,11 +25,15 @@ public class FancyPlacements {
     }
 
     public void onPlacement(BlockEvent.EntityPlaceEvent event) {
-        event.setCanceled(true);
         BlockState block = event.getPlacedBlock();
         LevelAccessor level = event.getLevel();
         if (!((Level) level).isClientSide && !block.is(Registry.DUMMY_BLOCK.get())) {
+            //TODO modded blocks!
+            if(block.getBlock() instanceof TallFlowerBlock || block.getBlock() instanceof BedBlock || block.getBlock() instanceof DoorBlock) {
+                return;
+            }
             ServerLifecycleHooks.getCurrentServer().submit(() -> {
+                event.setCanceled(true);
                 level.setBlock(event.getPos(), Registry.DUMMY_BLOCK.get().defaultBlockState(), 11);
                 if (level.getBlockEntity(event.getPos()) instanceof DummyBlockEntity dummy) {
                     dummy.target = block;
