@@ -17,7 +17,7 @@ public class DummyTileRenderer implements BlockEntityRenderer<DummyBlockEntity> 
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
 
-        float scale = tile.age / 60f;
+        float scale = tile.age / 10f;
         poseStack.scale(scale, scale, scale);
 
         poseStack.translate(-0.5, -0.5, -0.5);

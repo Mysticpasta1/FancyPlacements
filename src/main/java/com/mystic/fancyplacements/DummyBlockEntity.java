@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class DummyBlockEntity extends BlockEntity {
 
-    public int age = 10;
+    public int age = 0;
     public BlockState target;
 
     public DummyBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -31,10 +31,8 @@ public class DummyBlockEntity extends BlockEntity {
 
     public static void tick(Level pLevel, BlockPos pPos, BlockState pState, DummyBlockEntity entity) {
         if(!pLevel.isClientSide) {
-            System.out.println("Age Before: " + entity.age);
             ++entity.age;
-            System.out.println("Age After: " + entity.age);
-            if (entity.age >= 60) {
+            if (entity.age >= 10) {
                 pLevel.setBlock(pPos, entity.target, 3);
             }
             entity.sync();
